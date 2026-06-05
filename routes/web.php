@@ -80,12 +80,19 @@ Route::get('/users/export', [AdminController::class, 'exportUsers'])->name('user
     // Area Management
     Route::resource('areas', AreaManagerController::class);
     
-    // Outlet Management
-    Route::get('/outlets', [OutletController::class, 'index'])->name('outlets.index');
-    Route::get('/outlets/{outlet}', [OutletController::class, 'show'])->name('outlets.show');
-    Route::get('/outlets/create', [OutletController::class, 'create'])->name('outlets.create');
-    Route::post('/outlets/{outlet}/verify', [OutletController::class, 'verify'])->name('outlets.verify');
-    Route::post('/outlets/{outlet}/suspend', [OutletController::class, 'suspend'])->name('outlets.suspend');
+    // ========== ADD THESE OUTLET ROUTES ==========
+    Route::prefix('outlets')->name('outlets.')->group(function () {
+        Route::get('/', [OutletController::class, 'index'])->name('index');
+        Route::get('/create', [OutletController::class, 'create'])->name('create');  
+        Route::post('/outlets', [OutletController::class, 'store'])->name('admin.outlets.store');
+        Route::get('/{outlet}', [OutletController::class, 'show'])->name('show');
+        Route::get('/{outlet}/edit', [OutletController::class, 'edit'])->name('edit');
+        Route::put('/{outlet}', [OutletController::class, 'update'])->name('update');
+        Route::delete('/{outlet}', [OutletController::class, 'destroy'])->name('destroy');
+        Route::post('/{outlet}/verify', [OutletController::class, 'verify'])->name('verify');
+        Route::post('/{outlet}/suspend', [OutletController::class, 'suspend'])->name('suspend');
+    });
+    // ============================================
     
     // Rider Management
     Route::get('/riders', [RiderController::class, 'index'])->name('riders.index');
@@ -139,7 +146,8 @@ Route::middleware(['auth', 'role:area-manager'])->prefix('area-manager')->name('
     
     // Outlet Management (within area)
     Route::get('/outlets', [OutletController::class, 'areaOutlets'])->name('outlets.index');
-    Route::get('/outlets/create', [OutletController::class, 'create'])->name('outlets.create');
+// Area Manager routes - HAS create route
+Route::get('/outlets/create', [OutletController::class, 'create'])->name('area-manager.outlets.create');
     Route::post('/outlets', [OutletController::class, 'store'])->name('outlets.store');
     Route::get('/outlets/{outlet}/edit', [OutletController::class, 'edit'])->name('outlets.edit');
         Route::get('/outlets/{outlet}', [AreaManagerController::class, 'showOutlet'])->name('outlets.show');  // নতুন যোগ করুন

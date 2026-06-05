@@ -15,29 +15,38 @@ class AreaManagerController extends Controller
     /**
      * Display area manager dashboard
      */
-    public function dashboard()
-    {
-        $areaId = auth()->user()->area_id;
-        
-        $stats = [
-            'outlets' => Outlet::where('area_id', $areaId)->count(),
-            'riders' => User::where('area_id', $areaId)
-                ->whereHas('role', fn($q) => $q->where('name', 'rider'))
-                ->count(),
-            'orders' => Order::whereHas('buyerOutlet', fn($q) => $q->where('area_id', $areaId))->count(),
-            'pending_orders' => Order::where('status', 'pending')
-                ->whereHas('buyerOutlet', fn($q) => $q->where('area_id', $areaId))
-                ->count(),
-        ];
-        
-        $recentOrders = Order::whereHas('buyerOutlet', fn($q) => $q->where('area_id', $areaId))
-            ->with(['buyerOutlet', 'supplierOutlet', 'rider'])
-            ->latest()
-            ->limit(10)
-            ->get();
-            
-        return view('area-manager.dashboard', compact('stats', 'recentOrders'));
-    }
+public function dashboard()
+{
+    $areaId = auth()->user()->area_id;
+    
+    $totalOutlets = Outlet::where('area_id', $areaId)->count();
+    $totalRiders = User::where('area_id', $areaId)
+        ->whereHas('role', function($query) {
+            $query->where('name', 'rider');
+        })->count();
+    $totalOrders = Order::whereHas('outlet', function($query) use ($areaId) {
+        $query->where('area_id', $areaId);
+    })->count();
+    $totalRevenue = Order::whereHas('outlet', function($query) use ($areaId) {
+        $query->where('area_id', $areaId);
+    })->where('status', 'delivered')->sum('total_amount');
+    
+    $recentOrders = Order::whereHas('outlet', function($query) use ($areaId) {
+        $query->where('area_id', $areaId);
+    })->latest()->take(5)->get();
+    
+    $recentOutlets = Outlet::where('area_id', $areaId)->latest()->take(5)->get();
+    
+    $recentRiders = User::where('area_id', $areaId)
+        ->whereHas('role', function($query) {
+            $query->where('name', 'rider');
+        })->latest()->take(5)->get();
+    
+    return view('area-manager.dashboard', compact(
+        'totalOutlets', 'totalRiders', 'totalOrders', 'totalRevenue',
+        'recentOrders', 'recentOutlets', 'recentRiders'
+    ));
+}
     
     /**
      * Display a listing of areas (for admin)
@@ -155,11 +164,13 @@ class AreaManagerController extends Controller
         return view('area-manager.outlets.index', compact('outlets'));
     }
     
-    public function createOutlet()
-    {
-        $areas = Area::all();
-        return view('area-manager.outlets.create', compact('areas'));
-    }
+public function createOutlet()
+{
+    // Remove this line: dd('Reached createOutlet method', auth()->user()->role->name);
+    
+    $areas = Area::all();
+    return view('area-manager.outlets.create', compact('areas'));
+}
     
     public function storeOutlet(Request $request)
     {

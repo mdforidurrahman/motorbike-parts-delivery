@@ -9,7 +9,7 @@
         <p class="text-muted">Managing area: {{ auth()->user()->area->name ?? 'N/A' }}</p>
     </div>
     <div class="col-md-6 text-end">
-        <a href="{{ route('area-manager.outlets.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.outlets.create') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> Add New Outlet
         </a>
     </div>

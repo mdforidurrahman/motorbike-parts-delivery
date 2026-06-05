@@ -47,10 +47,10 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'rider_id');
     }
 
-    public function hasRole($roleName)
-    {
-        return $this->role && $this->role->name === $roleName;
-    }
+public function hasRole($roleName)
+{
+    return $this->role && $this->role->name === $roleName;
+}
 
     public function getNotifications()
     {

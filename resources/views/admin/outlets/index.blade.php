@@ -7,11 +7,7 @@
     <div class="col-md-6">
         <h2>All Outlets</h2>
     </div>
-    <div class="col-md-6 text-end">
-        <a href="{{ route('area-manager.outlets.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Add New Outlet
-        </a>
-    </div>
+
 </div>
 
 <div class="card">
@@ -94,7 +90,7 @@
             <div class="text-center py-5">
                 <i class="fas fa-store fa-3x text-muted mb-3"></i>
                 <p class="text-muted">No outlets found.</p>
-                <a href="{{ route('area-manager.outlets.create') }}" class="btn btn-primary">
+                <a href="{{ route('admin.outlets.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Add First Outlet
                 </a>
             </div>

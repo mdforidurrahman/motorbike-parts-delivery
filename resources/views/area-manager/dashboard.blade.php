@@ -1,244 +1,273 @@
 @extends('layouts.app')
 
-@section('title', 'Area Manager Dashboard - MotoLink')
-
 @section('content')
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="mb-4">Area Manager Dashboard</h2>
-        <p class="text-muted">Welcome back, {{ auth()->user()->name }}!</p>
-        <p class="text-muted">Managing Area: <strong>{{ auth()->user()->area->name ?? 'N/A' }}</strong></p>
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Area Manager Dashboard</h1>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Area Manager</li>
+        </ol>
     </div>
-</div>
 
-<!-- Stats Cards -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-white-50">Total Outlets</h6>
-                        <h3 class="text-white">{{ $stats['outlets'] ?? 0 }}</h3>
+    <!-- Statistics Cards -->
+    <div class="row">
+        <!-- Outlets Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Outlets</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalOutlets ?? 0 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-store fa-2x text-gray-300"></i>
+                        </div>
                     </div>
-                    <i class="fas fa-store fa-2x text-white-50"></i>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-white-50">Active Riders</h6>
-                        <h3 class="text-white">{{ $stats['riders'] ?? 0 }}</h3>
-                    </div>
-                    <i class="fas fa-motorcycle fa-2x text-white-50"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card bg-info text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-white-50">Total Orders</h6>
-                        <h3 class="text-white">{{ $stats['orders'] ?? 0 }}</h3>
-                    </div>
-                    <i class="fas fa-shopping-cart fa-2x text-white-50"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card bg-warning text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-white-50">Pending Orders</h6>
-                        <h3 class="text-white">{{ $stats['pending_orders'] ?? 0 }}</h3>
-                    </div>
-                    <i class="fas fa-clock fa-2x text-white-50"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Second Row Stats -->
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0"><i class="fas fa-chart-line"></i> Area Performance</h5>
-            </div>
-            <div class="card-body">
-                <canvas id="areaPerformanceChart" height="250"></canvas>
+        <!-- Riders Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Riders</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalRiders ?? 0 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-motorcycle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="fas fa-tachometer-alt"></i> Quick Stats</h5>
+
+        <!-- Orders Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Orders</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalOrders ?? 0 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-md-6">
-                        <div class="border rounded p-3 mb-2">
-                            <h4 class="text-primary">{{ $stats['verified_outlets'] ?? 0 }}</h4>
-                            <p class="text-muted mb-0">Verified Outlets</p>
+        </div>
+
+        <!-- Revenue Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Total Revenue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">BDT {{ number_format($totalRevenue ?? 0, 2) }}</div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="border rounded p-3 mb-2">
-                            <h4 class="text-success">{{ $stats['active_riders'] ?? 0 }}</h4>
-                            <p class="text-muted mb-0">Active Riders</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="border rounded p-3">
-                            <h4 class="text-info">৳{{ number_format($stats['total_revenue'] ?? 0, 2) }}</h4>
-                            <p class="text-muted mb-0">Total Revenue</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="border rounded p-3">
-                            <h4 class="text-warning">{{ $stats['delivered_today'] ?? 0 }}</h4>
-                            <p class="text-muted mb-0">Delivered Today</p>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-clock"></i> Recent Orders in Your Area</h5>
-            </div>
-            <div class="card-body">
-                @if(isset($recentOrders) && $recentOrders->count() > 0)
+    <!-- Recent Orders Table -->
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
+                    <a href="{{ route('area-manager.orders.index') }}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Order #</th>
-                                    <th>Buyer Shop</th>
-                                    <th>Supplier Shop</th>
-                                    <th>Rider</th>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
                                     <th>Amount</th>
                                     <th>Status</th>
                                     <th>Date</th>
-                                    <th>Action</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($recentOrders as $order)
+                                @forelse($recentOrders ?? [] as $order)
                                 <tr>
-                                    <td>
-                                        <strong>{{ $order->order_number }}</strong>
-                                    </td>
-                                    <td>{{ $order->buyerOutlet->shop_name ?? 'N/A' }}</br>
-                                        <small class="text-muted">{{ $order->buyerOutlet->phone ?? '' }}</small>
-                                    </td>
-                                    <td>
-                                        @if($order->supplierOutlet)
-                                            {{ $order->supplierOutlet->shop_name }}
-                                        @else
-                                            <span class="badge bg-warning">Pending</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($order->rider)
-                                            {{ $order->rider->name }}
-                                        @else
-                                            <span class="badge bg-secondary">Not Assigned</span>
-                                        @endif
-                                    </td>
-                                    <td>৳{{ number_format($order->total_amount, 2) }}</td>
+                                    <td>#{{ $order->id }}</td>
+                                    <td>{{ $order->customer_name ?? 'N/A' }}</td>
+                                    <td>BDT {{ number_format($order->total_amount ?? 0, 2) }}</td>
                                     <td>
                                         @php
                                             $statusColors = [
                                                 'pending' => 'warning',
-                                                'accepted' => 'info',
-                                                'rider_assigned' => 'primary',
-                                                'picked_up' => 'dark',
+                                                'processing' => 'info',
                                                 'delivered' => 'success',
                                                 'cancelled' => 'danger'
                                             ];
-                                            $statusText = [
-                                                'pending' => 'Pending',
-                                                'accepted' => 'Accepted',
-                                                'rider_assigned' => 'Rider Assigned',
-                                                'picked_up' => 'Picked Up',
-                                                'delivered' => 'Delivered',
-                                                'cancelled' => 'Cancelled'
-                                            ];
+                                            $color = $statusColors[$order->status] ?? 'secondary';
                                         @endphp
-                                        <span class="badge bg-{{ $statusColors[$order->status] ?? 'secondary' }}">
-                                            {{ $statusText[$order->status] ?? ucfirst($order->status) }}
-                                        </span>
+                                        <span class="badge badge-{{ $color }}">{{ ucfirst($order->status) }}</span>
                                     </td>
-                                    <td>{{ $order->created_at->format('d M Y, h:i A') }}</td>
+                                    <td>{{ $order->created_at->format('d M Y') }}</td>
                                     <td>
-                                        <a href="{{ route('area-manager.orders.show', $order->id) }}" class="btn btn-sm btn-primary">
+                                        <a href="{{ route('area-manager.orders.show', $order->id) }}" class="btn btn-sm btn-info">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">No orders found</td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
-                @else
-                    <div class="text-center py-5">
-                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">No orders found in your area.</p>
-                    </div>
-                @endif
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Quick Actions -->
-<div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+    <!-- Quick Actions Row -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ route('area-manager.outlets.index') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-store"></i> Manage Outlets
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ route('area-manager.riders.index') }}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-motorcycle"></i> Manage Riders
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ route('area-manager.orders.index') }}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-shopping-cart"></i> View Orders
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ route('area-manager.reports.index') }}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-chart-line"></i> View Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <a href="{{ route('area-manager.outlets.create') }}" class="btn btn-outline-primary w-100 mb-2">
-                            <i class="fas fa-plus"></i> Add New Outlet
-                        </a>
+        </div>
+    </div>
+
+    <!-- Recent Outlets -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Outlets</h6>
+                    <a href="{{ route('area-manager.outlets.index') }}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Outlet Name</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($recentOutlets ?? [] as $outlet)
+                                <tr>
+                                    <td>{{ $outlet->name }}</td>
+                                    <td>{{ $outlet->phone }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ $outlet->status == 'active' ? 'success' : 'danger' }}">
+                                            {{ ucfirst($outlet->status) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('area-manager.outlets.show', $outlet->id) }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="text-center">No outlets found</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{{ route('area-manager.riders.create') }}" class="btn btn-outline-success w-100 mb-2">
-                            <i class="fas fa-motorcycle"></i> Add New Rider
-                        </a>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="{{ route('area-manager.outlets.index') }}" class="btn btn-outline-info w-100 mb-2">
-                            <i class="fas fa-store"></i> Manage Outlets
-                        </a>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="{{ route('area-manager.riders.index') }}" class="btn btn-outline-warning w-100 mb-2">
-                            <i class="fas fa-users"></i> Manage Riders
-                        </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Riders -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Riders</h6>
+                    <a href="{{ route('area-manager.riders.index') }}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Rider Name</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($recentRiders ?? [] as $rider)
+                                <tr>
+                                    <td>{{ $rider->name }}</td>
+                                    <td>{{ $rider->phone }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ $rider->status == 'active' ? 'success' : 'danger' }}">
+                                            {{ ucfirst($rider->status) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('area-manager.riders.show', $rider->id) }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="text-center">No riders found</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -247,55 +276,14 @@
 </div>
 @endsection
 
-@push('styles')
-<style>
-    .card-header {
-        border-bottom: none;
-    }
-    .table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-        font-size: 0.85rem;
-    }
-    .table td {
-        vertical-align: middle;
-        font-size: 0.9rem;
-    }
-</style>
-@endpush
-
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Area Performance Chart
-    const ctx = document.getElementById('areaPerformanceChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-                label: 'Orders',
-                data: [65, 59, 80, 81, 56, 55, 40, 70, 85, 90, 95, 100],
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                tension: 0.1
-            }, {
-                label: 'Revenue (৳)',
-                data: [28000, 25000, 35000, 40000, 32000, 30000, 25000, 45000, 50000, 55000, 60000, 65000],
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                }
-            }
-        }
+    // Optional: Add any JavaScript for the dashboard
+    $(document).ready(function() {
+        // Auto-refresh data every 30 seconds (optional)
+        setInterval(function() {
+            location.reload();
+        }, 30000);
     });
 </script>
 @endpush
